@@ -1,0 +1,31 @@
+Package: shinytest3
+Type: Package
+Title: shinytest3
+Version: 0.1.0
+Authors@R: c(
+    person("Jakub", "Sobolewski", email = "jakupsob@gmail.com", role = c("aut", "cre"))
+  )
+Description: Write better Shiny tests and testable Shiny apps.
+  It extends shinytest2 driver to help you write more robust tests.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+    cli,
+    glue,
+    htmltools,
+    purrr,
+    R6,
+    rlang,
+    shinytest2,
+    testthat
+Suggests:
+    bslib,
+    chromote,
+    shiny,
+    shinyWidgets,
+    stringr,
+    withr
+Config/testthat/edition: 3
+RoxygenNote: 7.3.2
+URL: https://jakubsob.github.io/shinytest3/
