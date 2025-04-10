@@ -49,7 +49,67 @@
 </h1></div>
 <!-- badges: start -->
 
+<blockquote>
+<p><span class="emoji" data-emoji="construction">🚧</span> <strong>This package is in development and not yet ready for production use.</strong> <span class="emoji" data-emoji="construction">🚧</span></p>
+</blockquote>
+<p>shinytest3 makes testing Shiny during development easier, with fewer reasons for tests to break when Shiny code changes.</p>
+<p>shinytest3 is an extension of <a href="https://github.com/r-lib/testthat/" class="external-link">shinytest2</a> that helps you write testable Shiny code, enables usage of <a href="https://docs.cypress.io/app/core-concepts/best-practices#Selecting-Elements" class="external-link">robust selectors</a>, and facilitates test code reuse.</p>
 </div>
+<div class="section level1">
+<h1 id="why-do-you-need-shinytest3">Why do you need {shinytest3}?<a class="anchor" aria-label="anchor" href="#why-do-you-need-shinytest3"></a>
+</h1>
+<p>One of the reasons why shinytest2 tests tend to break after changes in Shiny code is their tight coupling with the structure of the app. This is because shinytest2 uses input IDs to find elements in the app. A change as simple as renaming an input or its parent module will cause tests to fail.</p>
+<p>shinytest3 is designed to mitigate these issues by providing a more flexible approach to element selection.</p>
+<p>Instead of relying on input IDs to find elements, shinytest3 introduces a <code>testable_component</code> which helps to target them from tests.</p>
+<p>Then you can use an <code>action</code> to interact with the component.</p>
+</div>
+<div class="section level1">
+<h1 id="what-happens-with-shiny-tests-when-you-change-shiny-code">What happens with Shiny tests when you change Shiny code?<a class="anchor" aria-label="anchor" href="#what-happens-with-shiny-tests-when-you-change-shiny-code"></a>
+</h1>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th>Change in Shiny code</th>
+<th>{shinytest2}</th>
+<th>{shinytest3}</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Add a new behavior/feature</td>
+<td>
+<span class="emoji" data-emoji="heavy_plus_sign">➕</span> Add tests</td>
+<td>
+<span class="emoji" data-emoji="heavy_plus_sign">➕</span> Add tests</td>
+</tr>
+<tr class="even">
+<td>Rename an input</td>
+<td>
+<span class="emoji" data-emoji="x">❌</span> Fail</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Pass</td>
+</tr>
+<tr class="odd">
+<td>Rename a module</td>
+<td>
+<span class="emoji" data-emoji="x">❌</span> Fail</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Pass</td>
+</tr>
+<tr class="even">
+<td>Change input values mapping</td>
+<td>
+<span class="emoji" data-emoji="x">❌</span> Fail</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Pass</td>
+</tr>
+</tbody>
+</table>
+</div>
+
   </main><aside class="col-md-3"><div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
