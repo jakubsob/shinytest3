@@ -1,7 +1,12 @@
 #' @keywords internal
 #' @importFrom cli cli_abort
 get_attr <- function(selector, attr, driver) {
-  code <- sprintf('$("[data-testable-id=%s]").attr("%s")', normalize_js_value(selector), attr)
+  code <- sprintf(
+    '$("[%s=%s]").attr("%s")',
+    data_attr(option_testid()),
+    normalize_js_value(selector),
+    attr
+  )
   result <- driver$get_js(script = code)
   if (length(result) == 0) {
     cli_abort("Element not found.")
@@ -18,31 +23,43 @@ get_attr <- function(selector, attr, driver) {
 #' @importFrom glue glue
 get_id <- function(selector, driver) {
   # We assume that the tag with ID is the wrapper of the component or a child
-  code <- sprintf('$("[data-testable-id=%s]:visible").length', normalize_js_value(selector))
+  code <- sprintf(
+    '$("[%s=%s]:visible").length',
+    data_attr(option_testid()),
+    normalize_js_value(selector)
+  )
   # driver$wait_for_js(sprintf("!!%s", code))
   length <- driver$get_js(script = code)
   if (length == 0) {
     cli_abort(c(
-      "x" = glue::glue("No inputs found with [data-testable-id={normalize_js_value(selector)}]"),
+      "x" = glue::glue(
+        "No inputs found with [{data_attr(option_testid())}={normalize_js_value(selector)}]"
+      ),
       "i" = "Is this element visible?"
     ))
   }
 
   if (length > 1) {
-    code <- sprintf('[...$("[data-testable-id=%s]")].map(e => $(e).attr("data-testable-shinyid") )', normalize_js_value(selector))
+    code <- sprintf(
+      '[...$("[%s=%s]")].map(e => $(e).attr("data-testable-shinyid") )',
+      data_attr(option_testid()),
+      normalize_js_value(selector)
+    )
     ids <- driver$get_js(script = code) |> as.character()
     cli_abort(c(
-      "x" = glue("Multiple inputs found with [data-testable-id={normalize_js_value(selector)}]"),
+      "x" = glue(
+        "Multiple inputs found with [{data_attr(option_testid())}={normalize_js_value(selector)}]"
+      ),
       set_names(ids, rep("*", length(ids)))
     ))
   }
 
-  get_attr(selector, "data-testable-shinyid", driver)
+  get_attr(selector, data_attr(option_testshinyid()), driver)
 }
 
 #' @keywords internal
 get_testable_type <- function(selector, driver) {
-  get_attr(selector, "data-testable-type", driver)
+  get_attr(selector, data_attr(option_testtype()), driver)
 }
 
 #' Robust App Driver

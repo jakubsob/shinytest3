@@ -9,10 +9,14 @@
 testable_component <- function(x, id, data_testable_id, data_testable_type = NULL) {
   x |>
     tagAppendAttributes(
-      `data-testable-shinyid` = id,
-      `data-testable-id` = normalize_js_value(data_testable_id),
-      `data-testable-type` = normalize_js_value(data_testable_type)
+      !!data_attr(option_testshinyid()) := id,
+      !!data_attr(option_testid()) := normalize_js_value(data_testable_id),
+      !!data_attr(option_testtype()) := normalize_js_value(data_testable_type)
     )
+}
+
+data_attr <- function(x) {
+  sprintf("data-%s", x)
 }
 
 normalize_js_value <- function(x) {
