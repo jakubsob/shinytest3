@@ -25,6 +25,10 @@ get_visible <- function(selector, driver) {
   get(selector, '.is(":visible")', driver)
 }
 
+get_disabled <- function(selector, driver) {
+  get(selector, '.is(":disabled")', driver)
+}
+
 #' @keywords internal
 #' @importFrom cli cli_abort
 #' @importFrom purrr set_names
@@ -110,6 +114,9 @@ Driver <- R6::R6Class(
     },
     is_visible = function(testid) {
       get_visible(testid, super)
+    },
+    is_disabled = function(testid) {
+      get_disabled(testid, super)
     }
     # Maybe extend also other methods of shinytest::AppDriver to use `data-testable-id`.
   )
