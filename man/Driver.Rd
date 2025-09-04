@@ -61,13 +61,13 @@ Easily detect what is the component we're interacting with using `data-testable-
 \if{latex}{\out{\hypertarget{method-NA-dispatch}{}}}
 \subsection{Method \code{dispatch()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Driver$dispatch(testable_id, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Driver$dispatch(testid, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{testable_id}}{character}
+\item{\code{testid}}{character}
 
 \item{\code{...}}{Object}
 }
@@ -80,7 +80,7 @@ Easily detect what is the component we're interacting with using `data-testable-
 \subsection{Method \code{get_value()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Driver$get_value(
-  testable_id = missing_arg(),
+  testid = missing_arg(),
   input = missing_arg(),
   output = missing_arg(),
   export = missing_arg()
@@ -90,7 +90,7 @@ Easily detect what is the component we're interacting with using `data-testable-
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{testable_id}}{character}
+\item{\code{testid}}{character}
 
 \item{\code{input}}{character}
 

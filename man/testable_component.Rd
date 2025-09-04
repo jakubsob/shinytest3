@@ -4,16 +4,16 @@
 \alias{testable_component}
 \title{Testable component}
 \usage{
-testable_component(x, id, data_testable_id, data_testable_type = NULL)
+testable_component(x, id, testid, testtype = NULL)
 }
 \arguments{
 \item{x}{A widget}
 
 \item{id}{A string, the ID of the widget}
 
-\item{data_testable_id}{A string, the testable ID of the widget}
+\item{testid}{A string, the testable ID of the widget}
 
-\item{data_testable_type}{A string, the testable type of the widget}
+\item{testtype}{A string, the testable type of the widget}
 }
 \description{
 Testable component

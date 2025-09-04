@@ -58,7 +58,7 @@ get_id <- function(selector, driver) {
 }
 
 #' @keywords internal
-get_testable_type <- function(selector, driver) {
+get_testtype <- function(selector, driver) {
   get_attr(selector, data_attr(option_testtype()), driver)
 }
 
@@ -76,21 +76,26 @@ Driver <- R6::R6Class(
   inherit = shinytest2::AppDriver,
   cloneable = FALSE,
   public = list(
-    #' @param testable_id character
+    #' @param testid character
     #' @param ... Object
-    dispatch = function(testable_id, ...) {
-      id <- get_id(testable_id, super)
-      testable_type <- get_testable_type(testable_id, super)
+    dispatch = function(testid, ...) {
+      id <- get_id(testid, super)
+      testable_type <- get_testtype(testid, super)
       x <- structure(list(...), class = testable_type)
       action(x, id = id, driver = super)
     },
-    #' @param testable_id character
+    #' @param testid character
     #' @param input character
     #' @param output character
     #' @param export character
-    get_value = function(testable_id = missing_arg(), input = missing_arg(), output = missing_arg(), export = missing_arg()) {
-      if (!is_missing(testable_id)) {
-        id <- get_id(testable_id, super)
+    get_value = function(
+      testid = missing_arg(),
+      input = missing_arg(),
+      output = missing_arg(),
+      export = missing_arg()
+    ) {
+      if (!is_missing(testid)) {
+        id <- get_id(testid, super)
         return(super$get_value(input = id))
       }
       super$get_value(input = input, output = output, export = export)

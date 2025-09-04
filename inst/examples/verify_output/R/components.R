@@ -1,4 +1,4 @@
-dropdown <- function(id, label = NULL, choices, ..., testable_id) {
+dropdown <- function(id, label = NULL, choices, ..., testid) {
   shiny::selectInput(
     inputId = id,
     label = label,
@@ -7,19 +7,19 @@ dropdown <- function(id, label = NULL, choices, ..., testable_id) {
   ) |>
     shinytest3::testable_component(
       id = id,
-      data_testable_id = testable_id,
-      data_testable_type = "dropdown"
+      testid = testid,
+      testtype = "dropdown"
     )
 }
 
-plot_output <- function(outputId, ..., testable_id) {
+plot_output <- function(outputId, ..., testid) {
   shiny::plotOutput(
     outputId = outputId,
     ...
   ) |>
     shinytest3::testable_component(
       id = outputId,
-      data_testable_id = testable_id,
-      data_testable_type = "plot_output"
+      testid = testid,
+      testtype = "plot_output"
     )
 }

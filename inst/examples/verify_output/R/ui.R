@@ -9,16 +9,16 @@ ui <- function(id) {
           label = "X-axis variable:",
           choices = names(iris)[1:4],
           selected = NULL,
-          testable_id = "X variable"
+          testid = "X variable"
         ),
         dropdown(
           ns("y_var"),
           label = "Y-axis variable:",
           choices = names(iris)[1:4],
           selected = NULL,
-          testable_id = "Y variable"
+          testid = "Y variable"
         ),
-        plot_output(ns("iris_plot"), testable_id = "scatterplot")
+        plot_output(ns("iris_plot"), testid = "scatterplot")
       )
     )
   )

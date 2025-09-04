@@ -2,7 +2,7 @@ describe("driver$dispatch", {
   it("should dispatch default action", {
     # Arrange
     make_app <- function() {
-      dropdown <- function(id, label = NULL, choices, ..., data_testable_id) {
+      dropdown <- function(id, label = NULL, choices, ..., testid) {
         shinyWidgets::pickerInput(
           inputId = id,
           label = label,
@@ -11,8 +11,8 @@ describe("driver$dispatch", {
         ) |>
           testable_component(
             id = id,
-            data_testable_id = data_testable_id,
-            data_testable_type = "shinyWidgets::pickerInput"
+            testid = testid,
+            testtype = "shinyWidgets::pickerInput"
           )
       }
 
@@ -23,12 +23,10 @@ describe("driver$dispatch", {
             id = "test-picker",
             label = "Letter",
             choices = c("A", "B"),
-            data_testable_id = "Letter"
+            testid = "Letter"
           )
         ),
-        server = function(input, output) {
-
-        }
+        server = function(input, output) {}
       )
     }
     d <- Driver$new(make_app())
@@ -38,13 +36,13 @@ describe("driver$dispatch", {
     d$dispatch("Letter", value = "B")
 
     # Assert
-    expect_equal(d$get_value(testable_id = "Letter"), "B")
+    expect_equal(d$get_value(testid = "Letter"), "B")
   })
 
   it("should dispatch action to the visible component", {
     # Arrange
     make_app <- function() {
-      dropdown <- function(id, label = NULL, choices, ..., data_testable_id) {
+      dropdown <- function(id, label = NULL, choices, ..., testid) {
         shinyWidgets::pickerInput(
           inputId = id,
           label = label,
@@ -53,8 +51,8 @@ describe("driver$dispatch", {
         ) |>
           testable_component(
             id = id,
-            data_testable_id = data_testable_id,
-            data_testable_type = "shinyWidgets::pickerInput"
+            testid = testid,
+            testtype = "shinyWidgets::pickerInput"
           )
       }
 
@@ -65,7 +63,7 @@ describe("driver$dispatch", {
             id = "test-picker",
             label = "Letter",
             choices = c("A", "B"),
-            data_testable_id = "Letter"
+            testid = "Letter"
           ),
           shiny::div(
             class = "d-none",
@@ -73,13 +71,11 @@ describe("driver$dispatch", {
               id = "test2-picker",
               label = "Letter",
               choices = c("A", "B"),
-              data_testable_id = "Letter"
+              testid = "Letter"
             )
           )
         ),
-        server = function(input, output) {
-
-        }
+        server = function(input, output) {}
       )
     }
     d <- Driver$new(make_app())
@@ -89,7 +85,7 @@ describe("driver$dispatch", {
     d$dispatch("Letter", value = "B")
 
     # Assert
-    expect_equal(d$get_value(testable_id = "Letter"), "B")
+    expect_equal(d$get_value(testid = "Letter"), "B")
     expect_equal(d$get_value(input = "test2-picker"), "A")
   })
 })
