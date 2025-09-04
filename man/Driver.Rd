@@ -17,6 +17,8 @@ Easily detect what is the component we're interacting with using `data-testable-
 \itemize{
 \item \href{#method-NA-dispatch}{\code{Driver$dispatch()}}
 \item \href{#method-NA-get_value}{\code{Driver$get_value()}}
+\item \href{#method-NA-is_visible}{\code{Driver$is_visible()}}
+\item \href{#method-NA-is_disabled}{\code{Driver$is_disabled()}}
 }
 }
 \if{html}{\out{
@@ -97,6 +99,38 @@ Easily detect what is the component we're interacting with using `data-testable-
 \item{\code{output}}{character}
 
 \item{\code{export}}{character}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-NA-is_visible"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-is_visible}{}}}
+\subsection{Method \code{is_visible()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Driver$is_visible(testid)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{testid}}{character}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-NA-is_disabled"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-is_disabled}{}}}
+\subsection{Method \code{is_disabled()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Driver$is_disabled(testid)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{testid}}{character}
 }
 \if{html}{\out{</div>}}
 }

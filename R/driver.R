@@ -112,9 +112,11 @@ Driver <- R6::R6Class(
       }
       super$get_value(input = input, output = output, export = export)
     },
+    #' @param testid character
     is_visible = function(testid) {
       get_visible(testid, super)
     },
+    #' @param testid character
     is_disabled = function(testid) {
       get_disabled(testid, super)
     }
