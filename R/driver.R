@@ -84,6 +84,7 @@ get_testtype <- function(selector, driver) {
 #' @import R6
 #' @importFrom shinytest2 AppDriver
 #' @importFrom rlang is_missing missing_arg
+#' @import testthat
 Driver <- R6::R6Class(
   inherit = shinytest2::AppDriver,
   cloneable = FALSE,
@@ -119,6 +120,31 @@ Driver <- R6::R6Class(
     #' @param testid character
     is_disabled = function(testid) {
       get_disabled(testid, super)
+    },
+    #' @description
+    #'
+    #' Fails a test when there are Shiny errors visible on the page
+    verify_no_output_errors = function() {
+      code <- sprintf(
+        '$(".shiny-output-error:not(.shiny-output-error-validation):visible").length'
+      )
+      n <- super$get_js(script = code)
+      if (n == 0) {
+        testthat::succeed("No errors visible")
+        return()
+      }
+      code <- sprintf(
+        '[...$(".shiny-output-error:not(.shiny-output-error-validation):visible")]
+      .map(x => $(x).attr("id"))'
+      )
+      ids <- super$get_js(script = code)
+      testthat::fail(c(
+        "Shiny errors found!",
+        glue::glue(
+          "  {cli::symbol$info} Outputs with given IDs produced an error:"
+        ),
+        paste("   ", cli::symbol$bullet, ids)
+      ))
     }
     # Maybe extend also other methods of shinytest::AppDriver to use `data-testable-id`.
   )

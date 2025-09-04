@@ -9,6 +9,6 @@ describe("Scatter", {
     i_set("Y variable", "Sepal.Width", app)
     i_set("X variable", "Sepal.Width", app)
 
-    verify_no_output_error(app)
+    app$verify_no_output_errors()
   })
 })

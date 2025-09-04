@@ -4,9 +4,13 @@
 \alias{Driver}
 \title{Robust App Driver}
 \description{
-Instead of using Shiny IDs of components, use `data-testable-id` that can change independently from Shiny IDs.
+Robust App Driver
+
+Robust App Driver
 }
 \details{
+Instead of using Shiny IDs of components, use `data-testable-id` that can change independently from Shiny IDs.
+
 Easily detect what is the component we're interacting with using `data-testable-type` to dispatch a proper action.
 }
 \section{Super class}{
@@ -19,6 +23,7 @@ Easily detect what is the component we're interacting with using `data-testable-
 \item \href{#method-NA-get_value}{\code{Driver$get_value()}}
 \item \href{#method-NA-is_visible}{\code{Driver$is_visible()}}
 \item \href{#method-NA-is_disabled}{\code{Driver$is_disabled()}}
+\item \href{#method-NA-verify_no_output_errors}{\code{Driver$verify_no_output_errors()}}
 }
 }
 \if{html}{\out{
@@ -134,5 +139,15 @@ Easily detect what is the component we're interacting with using `data-testable-
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-NA-verify_no_output_errors"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-verify_no_output_errors}{}}}
+\subsection{Method \code{verify_no_output_errors()}}{
+Fails a test when there are Shiny errors visible on the page
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Driver$verify_no_output_errors()}\if{html}{\out{</div>}}
+}
+
 }
 }
