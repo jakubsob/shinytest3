@@ -33,3 +33,13 @@ Then you can use an `action` to interact with the component.
 | Rename an input             | :x: Fail                    | :white_check_mark: Pass     |
 | Rename a module             | :x: Fail                    | :white_check_mark: Pass     |
 | Change input values mapping | :x: Fail                    | :white_check_mark: Pass     |
+
+# Why create this package?
+
+The goal is to strike a balance between shinytest2 that provides shortcuts for testing Shiny apps easily, but at cost of tests fragility, with a more robust, black-box approach of other web app testing frameworks like Cypress or Playwright.
+
+To strike that balance, shinytest3 exposes robust methods for interacting and asserting the state of the app.
+
+- It encourages usage `testid` for targetting inputs/outputs and custom components in the app.
+- It encourages more robust assertions. `$is_visible(testid)`, `$is_disabled(testid)` encourages checking what can be observed by users of the app, and not expose internal details of the app with `AppDriver$get_values()`.
+- It has backwards compatibility with shinytest2. You can swap shinytest2 with shinytest3 and keep your tests working, and add new tests with practices from shinytest3.
