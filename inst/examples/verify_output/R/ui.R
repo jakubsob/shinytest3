@@ -18,7 +18,7 @@ ui <- function(id) {
           selected = NULL,
           testable_id = "Y variable"
         ),
-        plot_output(ns("iris_plot"))
+        plot_output(ns("iris_plot"), testable_id = "scatterplot")
       )
     )
   )
