@@ -1,11 +1,9 @@
-#' @keywords internal
-#' @importFrom cli cli_abort
-get_attr <- function(selector, attr, driver) {
+get <- function(selector, code, driver) {
   code <- sprintf(
-    '$("[%s=%s]").attr("%s")',
+    '$("[%s=%s]")%s',
     data_attr(option_testid()),
     normalize_js_value(selector),
-    attr
+    code
   )
   result <- driver$get_js(script = code)
   if (length(result) == 0) {
@@ -15,6 +13,16 @@ get_attr <- function(selector, attr, driver) {
     cli_abort("Multiple elements found.")
   }
   result
+}
+
+#' @keywords internal
+#' @importFrom cli cli_abort
+get_attr <- function(selector, attr, driver) {
+  get(selector, sprintf('.attr("%s")', attr), driver)
+}
+
+get_visible <- function(selector, driver) {
+  get(selector, '.is(":visible")', driver)
 }
 
 #' @keywords internal
@@ -99,6 +107,9 @@ Driver <- R6::R6Class(
         return(super$get_value(input = id))
       }
       super$get_value(input = input, output = output, export = export)
+    },
+    is_visible = function(testid) {
+      get_visible(testid, super)
     }
     # Maybe extend also other methods of shinytest::AppDriver to use `data-testable-id`.
   )
