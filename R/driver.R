@@ -53,9 +53,10 @@ get_id <- function(selector, driver) {
 
   if (length > 1) {
     code <- sprintf(
-      '[...$("[%s=%s]")].map(e => $(e).attr("data-testable-shinyid") )',
+      '[...$("[%s=%s]")].map(e => $(e).attr("%s") )',
       data_attr(option_testid()),
-      normalize_js_value(selector)
+      normalize_js_value(selector),
+      data_attr(option_testshinyid())
     )
     ids <- driver$get_js(script = code) |> as.character()
     cli_abort(c(
