@@ -5,14 +5,7 @@ get <- function(selector, code, driver) {
     normalize_js_value(selector),
     code
   )
-  result <- driver$get_js(script = code)
-  if (length(result) == 0) {
-    cli_abort("Element not found.")
-  }
-  if (length(result) > 1) {
-    cli_abort("Multiple elements found.")
-  }
-  result
+  driver$get_js(script = code)
 }
 
 #' @keywords internal
@@ -113,6 +106,11 @@ Driver <- R6::R6Class(
         return(super$get_value(input = id))
       }
       super$get_value(input = input, output = output, export = export)
+    },
+    #' @param testid character
+    #' @param code character
+    get = function(testid, code) {
+      get(testid, code, super)
     },
     #' @param testid character
     is_visible = function(testid) {

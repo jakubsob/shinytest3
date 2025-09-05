@@ -21,6 +21,7 @@ Easily detect what is the component we're interacting with using `data-testable-
 \itemize{
 \item \href{#method-NA-dispatch}{\code{Driver$dispatch()}}
 \item \href{#method-NA-get_value}{\code{Driver$get_value()}}
+\item \href{#method-NA-get}{\code{Driver$get()}}
 \item \href{#method-NA-is_visible}{\code{Driver$is_visible()}}
 \item \href{#method-NA-is_disabled}{\code{Driver$is_disabled()}}
 \item \href{#method-NA-verify_no_output_errors}{\code{Driver$verify_no_output_errors()}}
@@ -104,6 +105,24 @@ Easily detect what is the component we're interacting with using `data-testable-
 \item{\code{output}}{character}
 
 \item{\code{export}}{character}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-NA-get"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-get}{}}}
+\subsection{Method \code{get()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Driver$get(testid, code)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{testid}}{character}
+
+\item{\code{code}}{character}
 }
 \if{html}{\out{</div>}}
 }
