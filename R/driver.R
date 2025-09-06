@@ -1,9 +1,9 @@
-get <- function(selector, code, driver) {
+get <- function(selector, code = "(x) => { return(x) }", driver) {
   code <- sprintf(
-    '$("[%s=%s]")%s',
+    '(%s)($("[%s=%s]"));',
+    code,
     data_attr(option_testid()),
-    normalize_js_value(selector),
-    code
+    normalize_js_value(selector)
   )
   driver$get_js(script = code)
 }
@@ -11,15 +11,15 @@ get <- function(selector, code, driver) {
 #' @keywords internal
 #' @importFrom cli cli_abort
 get_attr <- function(selector, attr, driver) {
-  get(selector, sprintf('.attr("%s")', attr), driver)
+  get(selector, sprintf('(el) => el.attr("%s")', attr), driver)
 }
 
 get_visible <- function(selector, driver) {
-  get(selector, '.is(":visible")', driver)
+  get(selector, '(el) => el.is(":visible")', driver)
 }
 
 get_disabled <- function(selector, driver) {
-  get(selector, '.is(":disabled")', driver)
+  get(selector, '(el) => el.is(":disabled")', driver)
 }
 
 #' @keywords internal

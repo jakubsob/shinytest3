@@ -29,7 +29,7 @@ describe("driver$get", {
     on.exit(d$stop())
 
     # Act
-    result <- d$get("scatterplot", '.find("img").attr("src")')
+    result <- d$get("scatterplot", 'el => el.find("img").attr("src")')
 
     # Assert
     expect_true(startsWith(result, "data:image/png"))
@@ -59,7 +59,7 @@ describe("driver$get", {
     on.exit(d$stop())
 
     # Act
-    result <- d$get("scatterplot", '.find("img").attr("src")')
+    result <- d$get("scatterplot", 'el => el.find("img").attr("src")')
 
     # Assert
     expect_null(result)
