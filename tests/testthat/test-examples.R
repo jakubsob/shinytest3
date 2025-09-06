@@ -36,5 +36,6 @@ test_example <- function(path, tests_path = "tests/acceptance", ...) {
 }
 
 test_that("verify_output", {
+  skip_if(is_checking())
   test_example("verify_output")
 })
