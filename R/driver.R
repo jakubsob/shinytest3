@@ -78,6 +78,7 @@ Driver <- R6::R6Class(
     #' @param testid character
     #' @param ... Object
     dispatch = function(testid, ...) {
+      super$wait_for_idle()
       id <- get_id(testid, super)
       testable_type <- super$get_js(get_testtype(testid))
       x <- structure(list(...), class = testable_type)
@@ -93,6 +94,7 @@ Driver <- R6::R6Class(
       output = missing_arg(),
       export = missing_arg()
     ) {
+      super$wait_for_idle()
       if (!is_missing(testid)) {
         id <- get_id(testid, super)
         return(super$get_value(input = id))
@@ -102,14 +104,17 @@ Driver <- R6::R6Class(
     #' @param testid character
     #' @param code character
     get = function(testid, code) {
+      super$wait_for_idle()
       super$get_js(get(testid, code))
     },
     #' @param testid character
     is_visible = function(testid) {
+      super$wait_for_idle()
       super$get_js(get_visible(testid))
     },
     #' @param testid character
     is_disabled = function(testid) {
+      super$wait_for_idle()
       super$get_js(get_disabled(testid))
     },
     #' @description
