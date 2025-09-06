@@ -26,6 +26,8 @@ Suggests:
     shinyWidgets,
     stringr,
     withr
+Depends:
+    R (>= 4.1.0)
 Config/testthat/edition: 3
 RoxygenNote: 7.3.2
 URL: https://jakubsob.github.io/shinytest3/
