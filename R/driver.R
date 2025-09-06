@@ -1,31 +1,28 @@
-get <- function(selector, code = "(x) => { return(x) }", driver) {
-  code <- sprintf(
+get <- function(selector, code = "(x) => { return(x) }") {
+  sprintf(
     '(%s)($("[%s=%s]"));',
     code,
     data_attr(option_testid()),
     normalize_js_value(selector)
   )
-  driver$get_js(script = code)
 }
 
-#' @keywords internal
-#' @importFrom cli cli_abort
-get_attr <- function(selector, attr, driver) {
-  get(selector, sprintf('(el) => el.attr("%s")', attr), driver)
+get_attr <- function(selector, attr) {
+  get(selector, sprintf('(el) => el.attr("%s")', attr))
 }
 
-get_visible <- function(selector, driver) {
-  get(selector, '(el) => el.is(":visible")', driver)
+get_visible <- function(selector) {
+  get(selector, '(el) => el.is(":visible")')
 }
 
-get_disabled <- function(selector, driver) {
-  get(selector, '(el) => el.is(":disabled")', driver)
+get_disabled <- function(selector) {
+  get(selector, '(el) => el.is(":disabled")')
 }
 
-#' @keywords internal
-#' @importFrom cli cli_abort
-#' @importFrom purrr set_names
-#' @importFrom glue glue
+get_testtype <- function(selector) {
+  get_attr(selector, data_attr(option_testtype()))
+}
+
 get_id <- function(selector, driver) {
   # We assume that the tag with ID is the wrapper of the component or a child
   code <- sprintf(
@@ -36,7 +33,7 @@ get_id <- function(selector, driver) {
   # driver$wait_for_js(sprintf("!!%s", code))
   length <- driver$get_js(script = code)
   if (length == 0) {
-    cli_abort(c(
+    cli::cli_abort(c(
       "x" = glue::glue(
         "No inputs found with [{data_attr(option_testid())}={normalize_js_value(selector)}]"
       ),
@@ -52,20 +49,15 @@ get_id <- function(selector, driver) {
       data_attr(option_testshinyid())
     )
     ids <- driver$get_js(script = code) |> as.character()
-    cli_abort(c(
-      "x" = glue(
+    cli::cli_abort(c(
+      "x" = glue::glue(
         "Multiple inputs found with [{data_attr(option_testid())}={normalize_js_value(selector)}]"
       ),
-      set_names(ids, rep("*", length(ids)))
+      purrr::set_names(ids, rep("*", length(ids)))
     ))
   }
 
-  get_attr(selector, data_attr(option_testshinyid()), driver)
-}
-
-#' @keywords internal
-get_testtype <- function(selector, driver) {
-  get_attr(selector, data_attr(option_testtype()), driver)
+  driver$get_js(get_attr(selector, data_attr(option_testshinyid())))
 }
 
 #' Robust App Driver
@@ -75,10 +67,10 @@ get_testtype <- function(selector, driver) {
 #' Easily detect what is the component we're interacting with using `data-testable-type` to dispatch a proper action.
 #'
 #' @export
-#' @import R6
-#' @importFrom shinytest2 AppDriver
 #' @importFrom rlang is_missing missing_arg
+#' @importFrom shinytest2 AppDriver
 #' @import testthat
+#' @import R6
 Driver <- R6::R6Class(
   inherit = shinytest2::AppDriver,
   cloneable = FALSE,
@@ -87,7 +79,7 @@ Driver <- R6::R6Class(
     #' @param ... Object
     dispatch = function(testid, ...) {
       id <- get_id(testid, super)
-      testable_type <- get_testtype(testid, super)
+      testable_type <- super$get_js(get_testtype(testid))
       x <- structure(list(...), class = testable_type)
       action(x, id = id, driver = super)
     },
@@ -110,15 +102,15 @@ Driver <- R6::R6Class(
     #' @param testid character
     #' @param code character
     get = function(testid, code) {
-      get(testid, code, super)
+      super$get_js(get(testid, code))
     },
     #' @param testid character
     is_visible = function(testid) {
-      get_visible(testid, super)
+      super$get_js(get_visible(testid))
     },
     #' @param testid character
     is_disabled = function(testid) {
-      get_disabled(testid, super)
+      super$get_js(get_disabled(testid))
     },
     #' @description
     #'
