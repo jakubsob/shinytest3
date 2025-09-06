@@ -1,3 +1,38 @@
+assert_target_findable <- function(selector, driver) {
+  code <- get(selector, 'el => el.filter(":visible").length')
+  length <- driver$get_js(code)
+
+  if (length == 0) {
+    attr_testid <- data_attr(option_testid())
+    testid <- normalize_js_value(selector)
+    cli::cli_abort(c(
+      "x" = glue::glue(
+        "No inputs found with [{attr_testid}={testid}]"
+      ),
+      "i" = "Is this element visible?"
+    ))
+  }
+
+  if (length > 1) {
+    attr_testid <- data_attr(option_testid())
+    testid <- normalize_js_value(selector)
+    code <- get(
+      selector,
+      sprintf(
+        'el => [...el].map(e => $(e).attr("%s"))',
+        data_attr(option_testshinyid())
+      )
+    )
+    ids <- as.character(driver$get_js(code))
+    cli::cli_abort(c(
+      "x" = glue::glue(
+        "Multiple inputs found with [{attr_testid}={testid}]"
+      ),
+      purrr::set_names(ids, rep("*", length(ids)))
+    ))
+  }
+}
+
 get <- function(selector, code = "(x) => { return(x) }") {
   sprintf(
     '(%s)($("[%s=%s]"));',
@@ -23,41 +58,8 @@ get_testtype <- function(selector) {
   get_attr(selector, data_attr(option_testtype()))
 }
 
-get_id <- function(selector, driver) {
-  # We assume that the tag with ID is the wrapper of the component or a child
-  code <- sprintf(
-    '$("[%s=%s]:visible").length',
-    data_attr(option_testid()),
-    normalize_js_value(selector)
-  )
-  # driver$wait_for_js(sprintf("!!%s", code))
-  length <- driver$get_js(script = code)
-  if (length == 0) {
-    cli::cli_abort(c(
-      "x" = glue::glue(
-        "No inputs found with [{data_attr(option_testid())}={normalize_js_value(selector)}]"
-      ),
-      "i" = "Is this element visible?"
-    ))
-  }
-
-  if (length > 1) {
-    code <- sprintf(
-      '[...$("[%s=%s]")].map(e => $(e).attr("%s") )',
-      data_attr(option_testid()),
-      normalize_js_value(selector),
-      data_attr(option_testshinyid())
-    )
-    ids <- driver$get_js(script = code) |> as.character()
-    cli::cli_abort(c(
-      "x" = glue::glue(
-        "Multiple inputs found with [{data_attr(option_testid())}={normalize_js_value(selector)}]"
-      ),
-      purrr::set_names(ids, rep("*", length(ids)))
-    ))
-  }
-
-  driver$get_js(get_attr(selector, data_attr(option_testshinyid())))
+get_testshinyid <- function(selector) {
+  get_attr(selector, data_attr(option_testshinyid()))
 }
 
 #' Robust App Driver
@@ -79,7 +81,8 @@ Driver <- R6::R6Class(
     #' @param ... Object
     dispatch = function(testid, ...) {
       super$wait_for_idle()
-      id <- get_id(testid, super)
+      assert_target_findable(testid, super)
+      id <- super$get_js(get_testshinyid(testid))
       testable_type <- super$get_js(get_testtype(testid))
       x <- structure(list(...), class = testable_type)
       action(x, id = id, driver = super)
@@ -94,9 +97,10 @@ Driver <- R6::R6Class(
       output = missing_arg(),
       export = missing_arg()
     ) {
-      super$wait_for_idle()
       if (!is_missing(testid)) {
-        id <- get_id(testid, super)
+        super$wait_for_idle()
+        assert_target_findable(testid, super)
+        id <- super$get_js(get_testshinyid(testid))
         return(super$get_value(input = id))
       }
       super$get_value(input = input, output = output, export = export)
