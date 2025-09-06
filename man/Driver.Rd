@@ -21,6 +21,7 @@ Easily detect what is the component we're interacting with using `data-testable-
 \itemize{
 \item \href{#method-NA-dispatch}{\code{Driver$dispatch()}}
 \item \href{#method-NA-get_value}{\code{Driver$get_value()}}
+\item \href{#method-NA-get_text}{\code{Driver$get_text()}}
 \item \href{#method-NA-get}{\code{Driver$get()}}
 \item \href{#method-NA-is_visible}{\code{Driver$is_visible()}}
 \item \href{#method-NA-is_disabled}{\code{Driver$is_disabled()}}
@@ -45,7 +46,6 @@ Easily detect what is the component we're interacting with using `data-testable-
 <li><span class="pkg-link" data-pkg="shinytest2" data-topic="AppDriver" data-id="get_js"><a href='../../shinytest2/html/AppDriver.html#method-AppDriver-get_js'><code>shinytest2::AppDriver$get_js()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="shinytest2" data-topic="AppDriver" data-id="get_logs"><a href='../../shinytest2/html/AppDriver.html#method-AppDriver-get_logs'><code>shinytest2::AppDriver$get_logs()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="shinytest2" data-topic="AppDriver" data-id="get_screenshot"><a href='../../shinytest2/html/AppDriver.html#method-AppDriver-get_screenshot'><code>shinytest2::AppDriver$get_screenshot()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="shinytest2" data-topic="AppDriver" data-id="get_text"><a href='../../shinytest2/html/AppDriver.html#method-AppDriver-get_text'><code>shinytest2::AppDriver$get_text()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="shinytest2" data-topic="AppDriver" data-id="get_url"><a href='../../shinytest2/html/AppDriver.html#method-AppDriver-get_url'><code>shinytest2::AppDriver$get_url()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="shinytest2" data-topic="AppDriver" data-id="get_values"><a href='../../shinytest2/html/AppDriver.html#method-AppDriver-get_values'><code>shinytest2::AppDriver$get_values()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="shinytest2" data-topic="AppDriver" data-id="get_variant"><a href='../../shinytest2/html/AppDriver.html#method-AppDriver-get_variant'><code>shinytest2::AppDriver$get_variant()</code></a></span></li>
@@ -110,6 +110,24 @@ Easily detect what is the component we're interacting with using `data-testable-
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-NA-get_text"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-get_text}{}}}
+\subsection{Method \code{get_text()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Driver$get_text(testid = missing_arg(), selector = missing_arg())}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{testid}}{character}
+
+\item{\code{selector}}{character}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-NA-get"></a>}}
 \if{latex}{\out{\hypertarget{method-NA-get}{}}}
 \subsection{Method \code{get()}}{
@@ -168,5 +186,12 @@ Fails a test when there are Shiny errors visible on the page
 \if{html}{\out{<div class="r">}}\preformatted{Driver$expect_output_errors(n = 0)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{integerish}
+}
+\if{html}{\out{</div>}}
+}
 }
 }

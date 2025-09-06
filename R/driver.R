@@ -62,6 +62,10 @@ get_testshinyid <- function(selector) {
   get_attr(selector, data_attr(option_testshinyid()))
 }
 
+make_testid_selector <- function(selector) {
+  sprintf('[%s="%s"]', data_attr(option_testid()), normalize_js_value(selector))
+}
+
 #' Robust App Driver
 #'
 #' Instead of using Shiny IDs of components, use `data-testable-id` that can change independently from Shiny IDs.
@@ -104,6 +108,18 @@ Driver <- R6::R6Class(
         return(super$get_value(input = id))
       }
       super$get_value(input = input, output = output, export = export)
+    },
+    #' @param testid character
+    #' @param selector character
+    get_text = function(
+      testid = missing_arg(),
+      selector = missing_arg()
+    ) {
+      if (!is_missing(testid)) {
+        assert_target_findable(testid, super)
+        selector <- make_testid_selector(testid)
+      }
+      super$get_text(selector = selector)
     },
     #' @param testid character
     #' @param code character
