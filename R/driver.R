@@ -124,22 +124,24 @@ Driver <- R6::R6Class(
     #' @description
     #'
     #' Fails a test when there are Shiny errors visible on the page
-    verify_no_output_errors = function() {
+    #' @param n integerish
+    expect_output_errors = function(n = 0) {
       code <- sprintf(
         '$(".shiny-output-error:not(.shiny-output-error-validation):visible").length'
       )
-      n <- super$get_js(script = code)
-      if (n == 0) {
-        testthat::succeed("No errors visible")
+      n_errors <- super$get_js(script = code)
+      if (n_errors == n) {
+        testthat::succeed("No visible shiny errors.")
         return()
       }
       code <- sprintf(
-        '[...$(".shiny-output-error:not(.shiny-output-error-validation):visible")]
-      .map(x => $(x).attr("id"))'
+        '[...$(".shiny-output-error:not(.shiny-output-error-validation):visible")].map(x => $(x).attr("%s"))',
+        data_attr(option_testshinyid())
       )
+
       ids <- super$get_js(script = code)
       testthat::fail(c(
-        "Shiny errors found!",
+        glue::glue("Expected {n} shiny errors, but found {n_errors}"),
         glue::glue(
           "  {cli::symbol$info} Outputs with given IDs produced an error:"
         ),

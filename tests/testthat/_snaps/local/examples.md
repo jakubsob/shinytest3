@@ -8,7 +8,7 @@
       x | 1        0 | scatter
       --------------------------------------------------------------------------------
       Failure ('test-scatter.R:12:5'): Scatter: should show a scatter plot for selected variables
-      Shiny errors found!
+      Expected 0 shiny errors, but found 1
       i Outputs with given IDs produced an error:
       * app-iris_plot
       --------------------------------------------------------------------------------
@@ -16,7 +16,7 @@
       
       -- Failed tests ----------------------------------------------------------------
       Failure ('test-scatter.R:12:5'): Scatter: should show a scatter plot for selected variables
-      Shiny errors found!
+      Expected 0 shiny errors, but found 1
       i Outputs with given IDs produced an error:
       * app-iris_plot
       [ FAIL 1 | WARN 0 | SKIP 0 | PASS 0 ]

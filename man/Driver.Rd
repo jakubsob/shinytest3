@@ -24,7 +24,7 @@ Easily detect what is the component we're interacting with using `data-testable-
 \item \href{#method-NA-get}{\code{Driver$get()}}
 \item \href{#method-NA-is_visible}{\code{Driver$is_visible()}}
 \item \href{#method-NA-is_disabled}{\code{Driver$is_disabled()}}
-\item \href{#method-NA-verify_no_output_errors}{\code{Driver$verify_no_output_errors()}}
+\item \href{#method-NA-expect_output_errors}{\code{Driver$expect_output_errors()}}
 }
 }
 \if{html}{\out{
@@ -160,12 +160,12 @@ Easily detect what is the component we're interacting with using `data-testable-
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-verify_no_output_errors"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-verify_no_output_errors}{}}}
-\subsection{Method \code{verify_no_output_errors()}}{
+\if{html}{\out{<a id="method-NA-expect_output_errors"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-expect_output_errors}{}}}
+\subsection{Method \code{expect_output_errors()}}{
 Fails a test when there are Shiny errors visible on the page
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Driver$verify_no_output_errors()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Driver$expect_output_errors(n = 0)}\if{html}{\out{</div>}}
 }
 
 }
