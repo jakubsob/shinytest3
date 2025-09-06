@@ -30,13 +30,15 @@ describe("driver$dispatch", {
       )
     }
     d <- Driver$new(make_app())
-    on.exit(d$stop())
 
     # Act
     d$dispatch("Letter", value = "B")
 
     # Assert
     expect_equal(d$get_value(testid = "Letter"), "B")
+
+    # Teardown
+    d$stop()
   })
 
   it("should dispatch action to the visible component", {
@@ -79,7 +81,6 @@ describe("driver$dispatch", {
       )
     }
     d <- Driver$new(make_app())
-    on.exit(d$stop())
 
     # Act
     d$dispatch("Letter", value = "B")
@@ -87,6 +88,9 @@ describe("driver$dispatch", {
     # Assert
     expect_equal(d$get_value(testid = "Letter"), "B")
     expect_equal(d$get_value(input = "test2-picker"), "A")
+
+    # Teardown
+    d$stop()
   })
 
   it("should throw an error if multiple targets are found with given id", {
@@ -126,10 +130,12 @@ describe("driver$dispatch", {
       )
     }
     d <- Driver$new(make_app())
-    on.exit(d$stop())
 
     # Act, Assert
     expect_snapshot_error(d$dispatch("Letter", value = "B"))
+
+    # Teardown
+    d$stop()
   })
 
   it("should throw an error if no targets are found with given id", {
@@ -143,9 +149,11 @@ describe("driver$dispatch", {
       )
     }
     d <- Driver$new(make_app())
-    on.exit(d$stop())
 
     # Act, Assert
     expect_snapshot_error(d$dispatch("Letter", value = "B"))
+
+    # Teardown
+    d$stop()
   })
 })

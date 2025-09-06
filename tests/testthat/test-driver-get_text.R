@@ -16,12 +16,14 @@ describe("driver$get_text", {
       )
     }
     d <- Driver$new(make_app())
-    on.exit(d$stop())
 
     # Act
     result <- d$get_text("header")
 
     # Assert
     expect_equal(result, "Header")
+
+    # Teardown
+    d$stop()
   })
 })

@@ -29,12 +29,14 @@ describe("driver$is_disabled", {
       )
     }
     d <- Driver$new(make_app())
-    on.exit(d$stop())
 
     # Act
     result <- d$is_disabled("Run")
 
     expect_true(result)
+
+    # Teardown
+    d$stop()
   })
 
   it("should return FALSE if element is not disabled", {
@@ -66,11 +68,13 @@ describe("driver$is_disabled", {
       )
     }
     d <- Driver$new(make_app())
-    on.exit(d$stop())
 
     # Act
     result <- d$is_disabled("Run")
 
     expect_false(result)
+
+    # Teardown
+    d$stop()
   })
 })

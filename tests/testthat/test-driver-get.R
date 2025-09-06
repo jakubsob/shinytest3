@@ -26,13 +26,15 @@ describe("driver$get", {
       )
     }
     d <- Driver$new(make_app())
-    on.exit(d$stop())
 
     # Act
     result <- d$get("scatterplot", 'el => el.find("img").attr("src")')
 
     # Assert
     expect_true(startsWith(result, "data:image/png"))
+
+    # Teardown
+    d$stop()
   })
 
   it("should return NULL if jQuery code isn't valid", {
@@ -56,12 +58,14 @@ describe("driver$get", {
       )
     }
     d <- Driver$new(make_app())
-    on.exit(d$stop())
 
     # Act
     result <- d$get("scatterplot", 'el => el.find("img").attr("src")')
 
     # Assert
     expect_null(result)
+
+    # Teardown
+    d$stop()
   })
 })

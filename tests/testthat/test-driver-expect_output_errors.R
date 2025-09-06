@@ -24,10 +24,12 @@ describe("driver$expect_output_errors", {
       )
     }
     d <- Driver$new(make_app())
-    on.exit(d$stop())
 
     # Act, Assert
     expect_success(d$expect_output_errors())
+
+    # Teardown
+    d$stop()
   })
 
   it("should expect given number of output errors", {
@@ -59,9 +61,11 @@ describe("driver$expect_output_errors", {
       )
     }
     d <- Driver$new(make_app())
-    on.exit(d$stop())
 
     # Act, Assert
     expect_snapshot_failure(d$expect_output_errors(0))
+
+    # Teardown
+    d$stop()
   })
 })

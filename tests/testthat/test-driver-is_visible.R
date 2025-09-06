@@ -27,12 +27,15 @@ describe("driver$is_visible", {
       )
     }
     d <- Driver$new(make_app())
-    on.exit(d$stop())
 
     # Act
     result <- d$is_visible("Run")
 
+    # Assert
     expect_false(result)
+
+    # Teardown
+    d$stop()
   })
 
   it("should return TRUE if element is visible", {
@@ -62,11 +65,14 @@ describe("driver$is_visible", {
       )
     }
     d <- Driver$new(make_app())
-    on.exit(d$stop())
 
     # Act
     result <- d$is_visible("Run")
 
+    # Assert
     expect_true(result)
+
+    # Teardown
+    d$stop()
   })
 })
