@@ -1,4 +1,11 @@
 url: https://jakubsob.github.io/shinytest3/
 template:
   bootstrap: 5
-
+  light-switch: true
+  bslib:
+    fg: "hsl(0, 0%, 5%)"
+    bg: "hsl(0, 0%, 95%)"
+    primary: "hsl(0, 60%, 50%)"
+    base_font: { google: "Geist" }
+    heading_font: { google: "Geist" }
+    code_font: { google: "Fira Code" }
