@@ -2,16 +2,194 @@
 % Please edit documentation in R/driver.R
 \name{Driver}
 \alias{Driver}
-\title{Robust App Driver}
+\title{Driver}
 \description{
-Robust App Driver
-
-Robust App Driver
+A layer extending \code{shinytest2::AppDriver}. Instead of relying on fragile Shiny IDs, this driver
+uses semantic test identifiers that can change independently from application logic.
 }
 \details{
-Instead of using Shiny IDs of components, use `data-testable-id` that can change independently from Shiny IDs.
+The Driver class provides a reliable testing framework by:
+\itemize{
+\item Using \code{testid} attributes for component identification instead of Shiny IDs
+\item Automatically detecting component types via \code{testtype} attributes
+\item Dispatching appropriate actions based on component type (\code{testtype})
+\item Providing error checking and user-observable state validation
+}
 
-Easily detect what is the component we're interacting with using `data-testable-type` to dispatch a proper action.
+Components should be wrapped with \code{\link[=testable_component]{testable_component()}} to add the necessary
+data attributes for this driver to work properly.
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{# Wrap a component used in the app in a function.
+# Use testable_component() to attach test attrubutes.
+dropdown <- function(id, label = NULL, choices, ..., testid) \{
+  shinyWidgets::pickerInput(
+    inputId = id,
+    label = label,
+    choices = choices,
+    ...
+  ) |>
+    testable_component(
+      id = id,
+      testid = testid,
+      testtype = "dropdown"
+    )
+\}
+
+app <- shiny::shinyApp(
+  ui = bslib::page_fluid(
+    # Attach a unique testid for each visible component
+    dropdown(
+      id = "test-picker",
+      label = "Letter",
+      choices = c("A", "B"),
+      testid = "Letter"
+    )
+  ),
+  server = function(input, output) \{\}
+)
+
+d <- Driver$new(app)
+
+# Dispatch an action to "Letter" component. It sets the value to "B".
+# Custom action wasn't registered for `testtype = "dropdown"`,
+# `shinytest2::AppDriver$set_inputs` will be used to set the value.
+d$dispatch("Letter", value = "B")
+
+# Get the value of "Letter" component.
+d$get_value(testid = "Letter") # Will return "B"
+}\if{html}{\out{</div>}}
+}
+\examples{
+\dontrun{
+# Initialize a driver for testing
+driver <- Driver$new(app_dir = "path/to/app")
+
+# Interact with components using testid
+driver$dispatch("Species", value = "Setosa")
+
+# Check component state
+driver$is_visible("Species distribution")
+
+# Get component values
+current_value <- driver$get_value(testid = "Species")
+
+# Verify no errors are present
+driver$expect_output_errors(n = 0)
+}
+
+
+## ------------------------------------------------
+## Method `Driver$dispatch`
+## ------------------------------------------------
+
+\dontrun{
+# Set value for a text input
+driver$dispatch("Username", value = "John Doe")
+
+# Click a button (no additional arguments needed)
+driver$dispatch("Submit")
+
+# Set multiple selection for a picker input
+driver$dispatch("Species", value = c("Setosa"))
+}
+
+
+## ------------------------------------------------
+## Method `Driver$get_value`
+## ------------------------------------------------
+
+\dontrun{
+# Get value using testid (recommended)
+current_text <- driver$get_value(testid = "Username")
+
+# Get value using direct input name (not recommended)
+current_text <- driver$get_value(input = "module-nested_module-username")
+
+# Get value using testid (recommended)
+plot_data <- driver$get_value(testid = "Scatterplot")
+
+# Get output value (not recommended)
+plot_data <- driver$get_value(output = "module-nested_module-main_plot")
+}
+
+## ------------------------------------------------
+## Method `Driver$get_text`
+## ------------------------------------------------
+
+\dontrun{
+# Get text using testid (recommended)
+title_text <- driver$get_text(testid = "Title")
+
+# Get text using CSS selector (not recommended)
+title_text <- driver$get_text(selector = "h1.main-title")
+}
+
+## ------------------------------------------------
+## Method `Driver$get`
+## ------------------------------------------------
+
+\dontrun{
+# Get a custom attribute value
+custom_attr <- driver$get("Name", "(el) => el.attr('custom')")
+
+# Check if element has a specific CSS class
+has_class <- driver$get("Next step", "(el) => el.hasClass('active')")
+
+# Count child elements
+child_count <- driver$get("Results list", "(el) => el.children().length")
+}
+
+## ------------------------------------------------
+## Method `Driver$is_visible`
+## ------------------------------------------------
+
+\dontrun{
+# Check if an error message is visible
+if (driver$is_visible("Error message")) {
+  error_text <- driver$get_text(testid = "Error message")
+}
+
+# Verify a modal dialog appeared
+expect_true(driver$is_visible("Confirm"))
+
+# Check if conditional UI element is shown
+driver$dispatch("Show advanced options", value = TRUE)
+expect_true(driver$is_visible("Advanced options"))
+}
+
+## ------------------------------------------------
+## Method `Driver$is_disabled`
+## ------------------------------------------------
+
+\dontrun{
+# Check if submit button is disabled when form is invalid
+expect_true(driver$is_disabled("Submit"))
+
+# Verify input becomes enabled after conditions are met
+driver$dispatch("Enable options", value = TRUE)
+expect_false(driver$is_disabled("Options"))
+}
+
+## ------------------------------------------------
+## Method `Driver$expect_output_errors`
+## ------------------------------------------------
+
+\dontrun{
+# Verify no errors during normal operation
+driver$expect_output_errors() # expects 0 errors
+
+# Test that invalid input produces exactly one error
+driver$dispatch("Category", value = "invalid")
+driver$expect_output_errors(n = 1) # expects 1 error
+
+driver$dispatch("Category", value = "valid")
+driver$expect_output_errors() # expects 0 errors
+}
+}
+\seealso{
+\code{\link[=testable_component]{testable_component()}} for preparing components for testing
+
+\link[shinytest2:AppDriver]{shinytest2::AppDriver} for the underlying driver functionality
 }
 \section{Super class}{
 \code{\link[shinytest2:AppDriver]{shinytest2::AppDriver}}
@@ -68,6 +246,21 @@ Easily detect what is the component we're interacting with using `data-testable-
 \if{html}{\out{<a id="method-NA-dispatch"></a>}}
 \if{latex}{\out{\hypertarget{method-NA-dispatch}{}}}
 \subsection{Method \code{dispatch()}}{
+Dispatch an action to a component based on its type
+
+This method automatically detects the component type using the \code{testtype}
+attribute and dispatches the appropriate action. The action system uses S3
+method dispatch to handle different component types appropriately.
+
+You can register your own custom actions by extending the \code{action} class:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{action.dropdown <- function(x, ...) \{
+  # Open the dropdown
+  # Click on a choice
+\}
+}\if{html}{\out{</div>}}
+
+If custom action isn't registered, it falls back to \code{shinytest2::AppDriver$set_inputs}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Driver$dispatch(testid, ...)}\if{html}{\out{</div>}}
 }
@@ -75,17 +268,56 @@ Easily detect what is the component we're interacting with using `data-testable-
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{testid}}{character}
+\item{\code{testid}}{A character string identifying the component via its \code{testid} attribute}
 
-\item{\code{...}}{Object}
+\item{\code{...}}{Additional arguments passed to the component-specific action method.
+Common arguments include \code{value} for setting input values.
+
+Arguments passed to custom \code{action} implementation.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+The dispatch system works as follows:
+\enumerate{
+\item Waits for the app to be idle
+\item Validates that the target component is findable and visible
+\item Extracts the Shiny ID and component type from data attributes
+\item Creates an object with the specified class (component type)
+\item Calls the appropriate \verb{action.*} method for that component type
+}
+}
+
+\subsection{Returns}{
+Invisible NULL. Called for side effects.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+# Set value for a text input
+driver$dispatch("Username", value = "John Doe")
+
+# Click a button (no additional arguments needed)
+driver$dispatch("Submit")
+
+# Set multiple selection for a picker input
+driver$dispatch("Species", value = c("Setosa"))
+}
+
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-NA-get_value"></a>}}
 \if{latex}{\out{\hypertarget{method-NA-get_value}{}}}
 \subsection{Method \code{get_value()}}{
+Get the current value of an input component
+
+Retrieves the current value of a Shiny input either by testid or by direct
+input/output/export name.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Driver$get_value(
   testid = missing_arg(),
@@ -98,21 +330,63 @@ Easily detect what is the component we're interacting with using `data-testable-
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{testid}}{character}
+\item{\code{testid}}{A character string identifying the component via its \code{testid}
+attribute. If provided, other parameters are ignored.}
 
-\item{\code{input}}{character}
+\item{\code{input}}{A character string specifying the input name directly. For compatibility with shinytest2.}
 
-\item{\code{output}}{character}
+\item{\code{output}}{A character string specifying the output name directly. For compatibility with shinytest2.}
 
-\item{\code{export}}{character}
+\item{\code{export}}{A character string specifying the export name directly. For compatibility with shinytest2.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+When \code{testid} is provided:
+\enumerate{
+\item Waits for the app to be idle
+\item Validates that the target component exists and is findable
+\item Extracts the Shiny ID from the \code{testshinyid} attribute
+\item Returns the value using the resolved ID
+}
+
+When direct names are provided, behaves like the standard \code{shinytest2::AppDriver$get_value()}.
+}
+
+\subsection{Returns}{
+The current value of the specified input, output, or export.
+Return type depends on the component type (e.g., character, numeric, list).
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+# Get value using testid (recommended)
+current_text <- driver$get_value(testid = "Username")
+
+# Get value using direct input name (not recommended)
+current_text <- driver$get_value(input = "module-nested_module-username")
+
+# Get value using testid (recommended)
+plot_data <- driver$get_value(testid = "Scatterplot")
+
+# Get output value (not recommended)
+plot_data <- driver$get_value(output = "module-nested_module-main_plot")
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-NA-get_text"></a>}}
 \if{latex}{\out{\hypertarget{method-NA-get_text}{}}}
 \subsection{Method \code{get_text()}}{
+Get the text content of a component
+
+Extracts the visible text content from a component, either by testid or by
+CSS selector. This is useful for reading labels, button text, output text,
+or any other textual content displayed in the app.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Driver$get_text(testid = missing_arg(), selector = missing_arg())}\if{html}{\out{</div>}}
 }
@@ -120,17 +394,54 @@ Easily detect what is the component we're interacting with using `data-testable-
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{testid}}{character}
+\item{\code{testid}}{A character string identifying the component via its \code{testid}
+attribute. If provided, selector parameter is ignored.}
 
-\item{\code{selector}}{character}
+\item{\code{selector}}{A CSS selector string for directly targeting elements
+(alternative to testid)}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+When \code{testid} is provided, the method:
+\enumerate{
+\item Validates that the target component exists and is findable
+\item Constructs a CSS selector using the testid
+\item Extracts the text content from the matching element
+}
+
+When \code{selector} is provided directly, it's passed through to the underlying
+\code{shinytest2::AppDriver$get_text()} method.
+}
+
+\subsection{Returns}{
+A character string containing the text content of the target element.
+Returns empty string if no text is found.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+# Get text using testid (recommended)
+title_text <- driver$get_text(testid = "Title")
+
+# Get text using CSS selector (not recommended)
+title_text <- driver$get_text(selector = "h1.main-title")
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-NA-get"></a>}}
 \if{latex}{\out{\hypertarget{method-NA-get}{}}}
 \subsection{Method \code{get()}}{
+Execute custom JavaScript code on a component
+
+Runs arbitrary JavaScript code in the context of a specific component identified
+by testid. This provides a flexible way to interact with components or extract
+information that isn't available through other driver methods.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Driver$get(testid, code)}\if{html}{\out{</div>}}
 }
@@ -138,17 +449,56 @@ Easily detect what is the component we're interacting with using `data-testable-
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{testid}}{character}
+\item{\code{testid}}{A character string identifying the component via its \code{testid} attribute}
 
-\item{\code{code}}{character}
+\item{\code{code}}{A character string containing JavaScript code to execute. The code
+receives the jQuery element(s) matching the testid as its parameter.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+The method:
+\enumerate{
+\item Waits for the app to be idle
+\item Constructs a JavaScript call targeting the component with the specified testid
+\item Executes the provided code with the component element(s) as context
+\item Returns the result
+}
+
+The JavaScript code parameter receives a jQuery object containing the matching elements.
+}
+
+\subsection{Returns}{
+The result of the JavaScript code execution. Type depends on what the
+JavaScript code returns (could be character, numeric, logical, list, etc.).
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+# Get a custom attribute value
+custom_attr <- driver$get("Name", "(el) => el.attr('custom')")
+
+# Check if element has a specific CSS class
+has_class <- driver$get("Next step", "(el) => el.hasClass('active')")
+
+# Count child elements
+child_count <- driver$get("Results list", "(el) => el.children().length")
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-NA-is_visible"></a>}}
 \if{latex}{\out{\hypertarget{method-NA-is_visible}{}}}
 \subsection{Method \code{is_visible()}}{
+Check if a component is visible
+
+Determines whether a component is currently visible in the DOM. This checks
+CSS visibility, display properties, and jQuery's \verb{:visible} pseudo-selector.
+Hidden, collapsed, or display:none elements will return FALSE.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Driver$is_visible(testid)}\if{html}{\out{</div>}}
 }
@@ -156,15 +506,59 @@ Easily detect what is the component we're interacting with using `data-testable-
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{testid}}{character}
+\item{\code{testid}}{A character string identifying the component via its \code{testid} attribute}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+The method:
+\enumerate{
+\item Waits for the app to be idle
+\item Executes JavaScript to check the jQuery \verb{:visible} selector status
+\item Returns the boolean result
+}
+
+This is particularly useful for:
+\itemize{
+\item Conditional UI elements that show/hide based on user input
+\item Verifying that certain elements appear after actions
+\item Testing responsive design behavior
+\item Checking modal or popup visibility
+}
+}
+
+\subsection{Returns}{
+A logical value: \code{TRUE} if the component is visible, \code{FALSE} otherwise.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+# Check if an error message is visible
+if (driver$is_visible("Error message")) {
+  error_text <- driver$get_text(testid = "Error message")
+}
+
+# Verify a modal dialog appeared
+expect_true(driver$is_visible("Confirm"))
+
+# Check if conditional UI element is shown
+driver$dispatch("Show advanced options", value = TRUE)
+expect_true(driver$is_visible("Advanced options"))
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-NA-is_disabled"></a>}}
 \if{latex}{\out{\hypertarget{method-NA-is_disabled}{}}}
 \subsection{Method \code{is_disabled()}}{
+Check if a component is disabled
+
+Determines whether a component is currently disabled. This checks the \code{disabled}
+attribute and property of HTML elements, which prevents user interaction.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Driver$is_disabled(testid)}\if{html}{\out{</div>}}
 }
@@ -172,16 +566,55 @@ Easily detect what is the component we're interacting with using `data-testable-
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{testid}}{character}
+\item{\code{testid}}{A character string identifying the component via its \code{testid} attribute}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+The method:
+\enumerate{
+\item Waits for the app to be idle
+\item Executes JavaScript to check the jQuery \verb{:disabled} selector status
+\item Returns the boolean result
+}
+
+This is useful for:
+\itemize{
+\item Verifying that form controls are properly disabled/enabled based on conditions
+\item Testing input validation states
+\item Checking button states during processing
+\item Ensuring UI elements respond correctly to application state changes
+}
+}
+
+\subsection{Returns}{
+A logical value: \code{TRUE} if the component is disabled, \code{FALSE} if enabled.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+# Check if submit button is disabled when form is invalid
+expect_true(driver$is_disabled("Submit"))
+
+# Verify input becomes enabled after conditions are met
+driver$dispatch("Enable options", value = TRUE)
+expect_false(driver$is_disabled("Options"))
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-NA-expect_output_errors"></a>}}
 \if{latex}{\out{\hypertarget{method-NA-expect_output_errors}{}}}
 \subsection{Method \code{expect_output_errors()}}{
-Fails a test when there are Shiny errors visible on the page
+Verify the expected number of Shiny output errors
+
+Checks for visible Shiny error messages on the page and fails the test if the
+actual number doesn't match the expected count. This is crucial for testing
+error handling and ensuring your app displays appropriate error messages.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Driver$expect_output_errors(n = 0)}\if{html}{\out{</div>}}
 }
@@ -189,9 +622,50 @@ Fails a test when there are Shiny errors visible on the page
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{n}}{integerish}
+\item{\code{n}}{An integer specifying the expected number of visible Shiny output errors.
+Defaults to 0 (no errors expected).}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+The method:
+\enumerate{
+\item Counts visible Shiny output errors (elements with class \code{.shiny-output-error})
+\item Excludes validation errors (\code{.shiny-output-error-validation})
+\item Compares the count to the expected number
+\item If counts match, the test succeeds silently
+\item If counts don't match, provides detailed failure information including
+the IDs of outputs that produced errors
+}
+
+This is typically used to verify that:
+\itemize{
+\item No unexpected errors occur during normal operation (\code{n = 0})
+\item Expected errors appear when testing error conditions (\code{n > 0})
+\item Error recovery works properly (errors disappear after fixes)
+}
+}
+
+\subsection{Returns}{
+Invisible NULL. Called for side effects (test success/failure).
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+# Verify no errors during normal operation
+driver$expect_output_errors() # expects 0 errors
+
+# Test that invalid input produces exactly one error
+driver$dispatch("Category", value = "invalid")
+driver$expect_output_errors(n = 1) # expects 1 error
+
+driver$dispatch("Category", value = "valid")
+driver$expect_output_errors() # expects 0 errors
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 }

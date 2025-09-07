@@ -31,3 +31,4 @@ Depends:
 Config/testthat/edition: 3
 RoxygenNote: 7.3.2
 URL: https://jakubsob.github.io/shinytest3/
+Roxygen: list(markdown = TRUE)
